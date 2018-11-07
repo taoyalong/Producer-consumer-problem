@@ -2,20 +2,20 @@ package consumerProblem.copy;
 
 import java.util.LinkedList;
 
-public class Producer implements Runnable {
+public class Consumer implements Runnable {
 	Data data = new Data();
-
 	int maxsize = data.getMaxsize();
 	LinkedList<Object> list;
-	private int pi;
+	int pi;
 
-	public Producer(LinkedList<Object> list, int i) {
+	public Consumer(LinkedList<Object> list, int i) {
 		this.list = list;
 		this.pi = i;
 	}
 
 	@Override
 	public void run() {
+
 		while (true) {
 			try {
 				Thread.sleep(500);
@@ -24,9 +24,8 @@ public class Producer implements Runnable {
 				e.printStackTrace();
 			}
 			synchronized (list) {
-				// 如果仓库已满
-				while (list.size() >= maxsize) {
-					System.out.println("第" + pi + "生产者暂停生产");
+				if (list.size() <= 0) {
+					System.out.println("第" + pi + "消费者暂停了一个产品");
 					try {
 						list.wait();
 					} catch (InterruptedException e) {
@@ -34,13 +33,11 @@ public class Producer implements Runnable {
 						e.printStackTrace();
 					}
 				}
-
-				list.add(new Object());
-				System.out.println("第" + pi + "生产者生产了一个产品\t现库存为" + list.size());
+				list.remove();
+				System.out.println("第" + pi + "消费者消费了一个产品\t现库存为" + list.size());
 				list.notifyAll();
 			}
 		}
-
 	}
 
 }
